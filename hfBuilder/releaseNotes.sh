@@ -17,21 +17,6 @@ main() {
     usage
     exit 1
   fi
-
-  # local HTML_REL_NOTES=$(getJiraReleaseNotesHtmlPage "7.10-HF23" | sed -n "/<textarea.*>/,/<\/textarea>/p")
-  # echo "$HTML_REL_NOTES"
-  # getSection "$HTML_REL_NOTES" "Bugs"
-  # <h2>(.|\n|\r)*?Bug(.|\n|\r)*?<\/h2>
-
-# getJiraJQLQuery "status%20in%20(Resolved%2C%20Closed)%20AND%20project%20%3D%20NXP%20AND%20fixVersion%20%3D%206.0-HF37%20AND%20issuetype%20%3D%20\"re\"" "summary"
-
-# exit 1
-
-
-  # echo -ne "\tBugs\n"
-  # getFixesSummaryByTypeAndVersion "6.0-HF37" "Bug"
-  # echo -ne "\n\tImprovements\n"
-  # getFixesSummaryByTypeAndVersion "6.0-HF37" "Improvement"
 }
 
 getTxtReleaseNotes() {
@@ -51,9 +36,7 @@ getTxtReleaseNotes() {
 getXMLReleaseNotes() {
   local L_VERSION=$1
   local L_BRANCH=$(echo "${L_VERSION}" | cut -d "-" -f 1)
-  # echo "[DEBUG] L_VERSION=$L_VERSION"
-  # echo "[DEBUG] L_BRANCH=$L_BRANCH"
-# sed 's/^\(.*\)$/    * \1/g'
+
   echo -ne "<package type="hotfix" name="nuxeo-@HOTFIXVERSION@" version="@VERSION@">
   <title>Nuxeo @HOTFIXVERSION@</title>
   <description>
@@ -112,23 +95,17 @@ getSection() {
 }
 
 getFixesSummaryByTypeAndVersion() {
-    local L_VERSION=$1
-    local L_TYPE=$2
-    local L_JQL_QUERY="status%20in%20(Resolved%2C%20Closed)%20AND%20project%20%3D%20NXP%20AND%20fixVersion%20%3D%20${L_VERSION}%20AND%20issuetype%20%3D%20\"${L_TYPE}\""
+  local L_VERSION=$1
+  local L_TYPE=$2
+  local L_JQL_QUERY="status%20in%20(Resolved%2C%20Closed)%20AND%20project%20%3D%20NXP%20AND%20fixVersion%20%3D%20${L_VERSION}%20AND%20issuetype%20%3D%20\"${L_TYPE}\""
 
-    # echo $L_REQUEST_URL
-    # curl -n "${L_REQUEST_URL}"
-    # curl -n -X GET -H "Content-Type: application/json" "https://${JIRA_HOST}/rest/api/2/search?jql="
-#    curl -n -s -X GET -H "Content-Type: application/json" -H "Cache-Control: no-cache" "${L_REQUEST_URL}" # | json_pp
-    getJSONValues "$(getJiraJQLQuery $L_JQL_QUERY "summary")" "summary"
-    # getJiraJQLQuery $L_JQL_QUERY "summary"
+  getJSONValues "$(getJiraJQLQuery $L_JQL_QUERY "summary")" "summary"
 }
 
 getJSONValues() {
   local L_JSON_STR=$1
   local L_FIELD=$2
 
-  # echo "${L_JSON_STR}" | grep "${L_FIELD}" | cut -d "\"" -f 4
   echo "${L_JSON_STR}" | grep "${L_FIELD}" | cut -d ":" -f 2 | sed 's/^\s*"\(.*\)"\s*$/\1/g'
 }
 
@@ -147,22 +124,27 @@ getJiraJQLQuery() {
 }
 
 getJiraVersionsPage() {
-    curl -nsSL "https://${JIRA_HOST}/browse/NXP?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel&subset=-1"
+  local L_JIRA_HOST=${1:-${JIRA_HOST}}
+
+  curl -nsSL "https://${L_JIRA_HOST}/browse/NXP?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel&subset=-1"
 }
 
 getJiraReleaseNotesId() {
-    local L_HF_VERSION=$1
-    getJiraVersionsPage | grep \"${L_HF_VERSION}\" | grep summary | sed 's/[^"]*"\([^"]*\).*/\1/' | cut -d "_" -f 2
+  local L_HF_VERSION=$1
+
+  getJiraVersionsPage | grep \"${L_HF_VERSION}\" | grep summary | sed 's/[^"]*"\([^"]*\).*/\1/' | cut -d "_" -f 2
 }
 
 getJiraReleaseNotesUrl() {
-    local L_HF_VERSION=$1
-    echo "https://${JIRA_HOST}/secure/ReleaseNote.jspa?projectId=10011&version="$(getJiraReleaseNotesId $L_HF_VERSION)
+  local L_HF_VERSION=$1
+  local L_JIRA_HOST=${2:-${JIRA_HOST}}
+  echo "https://${L_JIRA_HOST}/secure/ReleaseNote.jspa?projectId=10011&version="$(getJiraReleaseNotesId $L_HF_VERSION)
 }
 
 getJiraReleaseNotesHtmlPage() {
-    local L_HF_VERSION=$1
-    curl -nsSL "$(getJiraReleaseNotesUrl $L_HF_VERSION)"
+  local L_HF_VERSION=$1
+
+  curl -nsSL "$(getJiraReleaseNotesUrl $L_HF_VERSION)"
 }
 
 main "$@"
