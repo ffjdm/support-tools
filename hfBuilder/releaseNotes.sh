@@ -87,13 +87,6 @@ usage() {
   echo -ne "\t./releaseNotes.sh xml 6.0-HF37\n\n"
 }
 
-getSection() {
-  local L_HTML=$1
-  local L_SECTION_NAME=$2
-
-  echo "$L_HTML" | sed "s/<h2>\(.|\n|\r\)*?Bug\(.|\n|\r\)*?<\/h2>\(.|\n|\r\)*?<ul>\(\(.|\n|\r\)*?\)<\/ul>/\3/g"
-}
-
 getFixesSummaryByTypeAndVersion() {
   local L_VERSION=$1
   local L_TYPE=$2
@@ -120,13 +113,13 @@ getJiraJQLQuery() {
 
   local L_BUILT_URL="https://${L_JIRA_HOST}/rest/api/2/search?jql=${L_JQL_QUERY}${L_FIELDS}${L_MAX_RESULTS}"
   # echo "[DEBUG] L_BUILT_URL=${L_BUILT_URL}"
-  curl -nsSL -X GET -H "Content-Type: application/json" ${L_BUILT_URL} | json_pp
+  curl -sSL -X GET -H "Content-Type: application/json" ${L_BUILT_URL} | json_pp
 }
 
 getJiraVersionsPage() {
   local L_JIRA_HOST=${1:-${JIRA_HOST}}
 
-  curl -nsSL "https://${L_JIRA_HOST}/browse/NXP?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel&subset=-1"
+  curl -sSL "https://${L_JIRA_HOST}/browse/NXP?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel&subset=-1"
 }
 
 getJiraReleaseNotesId() {
@@ -144,7 +137,7 @@ getJiraReleaseNotesUrl() {
 getJiraReleaseNotesHtmlPage() {
   local L_HF_VERSION=$1
 
-  curl -nsSL "$(getJiraReleaseNotesUrl $L_HF_VERSION)"
+  curl -sSL "$(getJiraReleaseNotesUrl $L_HF_VERSION)"
 }
 
 main "$@"
