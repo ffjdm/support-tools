@@ -49,3 +49,8 @@ rm ${NUXEO_HOME}/nxserver/lib/tomcat-juli-${TOMCAT_SOURCE}.jar
 # upgrading files from extras
 cp tomcat-juli.jar ${NUXEO_HOME}/bin
 cp tomcat-juli-adapters.jar ${NUXEO_HOME}/lib
+cp apache-tomcat-${TOMCAT_TARGET}/RELEASE-NOTES ${NUXEO_HOME}/doc-tomcat
+cp apache-tomcat-${TOMCAT_TARGET}/LICENSE ${NUXEO_HOME}/doc-tomcat
+cp apache-tomcat-${TOMCAT_TARGET}/NOTICE ${NUXEO_HOME}/doc-tomcat
+cp apache-tomcat-${TOMCAT_TARGET}/RUNNING.txt ${NUXEO_HOME}/doc-tomcat
+sed 's/7\.0\.64/'${TOMCAT_TARGET}'/g' nuxeo.defaults
