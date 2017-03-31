@@ -16,8 +16,8 @@ NUXEO_HOME=/Users/ffischer/Downloads/tomcat/nuxeo-cap-7.10-tomcat
 TOMCAT_SOURCE=$(java -cp ${NUXEO_HOME}/lib/catalina.jar org.apache.catalina.util.ServerInfo | grep "Server number" | sed 's/.*\(7\.0.[0-9]*\).*/\1/g')
 TOMCAT_NUXEO_DEFAULT=$(cat ${NUXEO_HOME}/templates/nuxeo.defaults | grep tomcat.version | cut -d "=" -f 2)
 # autodetects latest version
-#TOMCAT_TARGET=$(curl -sSL ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
-TOMCAT_TARGET=${TOMCAT_TARGET:-7.0.74} # fallback to 7.0.75 if autodetection failed
+TOMCAT_TARGET=$(curl -sSL ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
+TOMCAT_TARGET=${TOMCAT_TARGET:-7.0.75} # fallback to 7.0.75 if autodetection failed
 
 echo "TOMCAT source version (from libs) is ${TOMCAT_SOURCE}"
 echo "TOMCAT source version (from nuxeo.defaults) is ${TOMCAT_NUXEO_DEFAULT}"
