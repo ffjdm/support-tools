@@ -53,4 +53,4 @@ cp apache-tomcat-${TOMCAT_TARGET}/RELEASE-NOTES ${NUXEO_HOME}/doc-tomcat
 cp apache-tomcat-${TOMCAT_TARGET}/LICENSE ${NUXEO_HOME}/doc-tomcat
 cp apache-tomcat-${TOMCAT_TARGET}/NOTICE ${NUXEO_HOME}/doc-tomcat
 cp apache-tomcat-${TOMCAT_TARGET}/RUNNING.txt ${NUXEO_HOME}/doc-tomcat
-sed 's/7\.0\.64/'${TOMCAT_TARGET}'/g' ${NUXEO_HOME}/templates/nuxeo.defaults
+sed -i 's/7\.0\.64/'${TOMCAT_TARGET}'/g' ${NUXEO_HOME}/templates/nuxeo.defaults
