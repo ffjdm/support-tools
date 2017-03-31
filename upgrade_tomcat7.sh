@@ -58,7 +58,7 @@ echo "TOMCAT source version (from nuxeo.defaults) is ${TOMCAT_NUXEO_DEFAULT}"
 if [ "${TOMCAT_SOURCE}" = "${TOMCAT_NUXEO_DEFAULT}" ]; then
   echo "TOMCAT source versions match!"
 else
-  echo "ERROR: TOMCAT source version don't match!"
+  echo "ERROR: TOMCAT source versions don't match!"
   exit 1
 fi
 echo -ne "TOMCAT target version is ${TOMCAT_TARGET}\n\n"
@@ -93,7 +93,7 @@ shasum -c tomcat-juli-adapters.jar.sha1
 md5sum -c tomcat-juli.jar.md5
 shasum -c tomcat-juli.jar.sha1
 
-echo "Paching Nuxeo..."
+echo "Patching Nuxeo..."
 # upgrading files from core distribution
 tar zxf apache-tomcat-${TOMCAT_TARGET}.tar.gz
 cp apache-tomcat-${TOMCAT_TARGET}/lib/* ${NUXEO_HOME}/lib
