@@ -1,24 +1,58 @@
 #!/bin/bash
 
-# Upgrades Nuxeo Tomcat to latest version
-
-# TODOs
-# make the NUXEO_HOME a parameter
-# make TOMCAT_TARGET an optional parameter
+# Upgrades Nuxeo Tomcat
 
 TOMCAT_ARCHIVE_URL="https://archive.apache.org/dist/tomcat/tomcat-7"
 TOMCAT_LATEST_URL="http://www.apache.org/dist/tomcat/tomcat-7"
-WORK_FOLDER=/tmp
-DOWNLOAD_FOLDER=${WORK_FOLDER}/nuxeo_downloads
 
-NUXEO_HOME=/Users/ffischer/Downloads/tomcat/nuxeo-cap-7.10-tomcat
+usage() {
+  echo -ne "Usage:\n\t./upgrade_tomcat7.sh NUXEO_HOME [TOMCAT_TARGET_VERSION] [TEMPORARY_WORK_FOLDER]\n\n"
+  echo -ne "Note: If no target version is specified the latest one will be retrieved from the Tomcat site\n\n"
+  echo -ne "Examples:\n"
+  echo -ne "\t./upgrade_tomcat7.sh /Users/ffischer/nuxeo-cap-7.10-tomcat\n"
+  echo -ne "\t./upgrade_tomcat7.sh /Users/ffischer/nuxeo-cap-7.10-tomcat 7.0.76\n"
+  echo -ne "\t./upgrade_tomcat7.sh /Users/ffischer/nuxeo-cap-7.10-tomcat 7.0.76 /tmp\n"
+}
+
+if [ $# -eq 0 ] || [ $# -gt 3 ]; then
+  usage
+  exit 1
+fi
+
+# does the Nuxeo location seem valid?
+if [ ! -f "$1/templates/nuxeo.defaults" ]; then
+  echo -ne "ERROR: Cannot find nuxeo.defaults file. Please check the Nuxeo location.\n\n"
+  exit 1
+fi
+NUXEO_HOME=$1
+
+if [ -z "$2" ]; then
+  # autodetects latest version
+  TOMCAT_TARGET=$(curl -sSL ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
+  TOMCAT_TARGET=${TOMCAT_TARGET:-7.0.75} # fallback to 7.0.75 if autodetection failed
+else
+  # check the TOMCAT version exists
+  VERSIONS_FOUND=$(curl -sSL ${TOMCAT_ARCHIVE_URL} | grep ${2} | wc -l | sed 's/^\s*\(.*\)$/\1/g')
+  if [ "$VERSIONS_FOUND" -ne 1 ]; then
+    echo -ne "Cannot find Tomcat version ${2}\n\n"
+    exit 1
+  else
+    TOMCAT_TARGET=$2
+  fi
+fi
+
+WORK_FOLDER=${3-/tmp}
+if [ ! -d "$WORK_FOLDER" ]; then
+  echo -ne "ERROR: Temporary work folder does not exists.\n\n"
+  exit 1
+fi
+DOWNLOAD_FOLDER=${WORK_FOLDER}/nuxeo_downloads
 
 TOMCAT_SOURCE=$(java -cp ${NUXEO_HOME}/lib/catalina.jar org.apache.catalina.util.ServerInfo | grep "Server number" | sed 's/.*\(7\.0.[0-9]*\).*/\1/g')
 TOMCAT_NUXEO_DEFAULT=$(cat ${NUXEO_HOME}/templates/nuxeo.defaults | grep tomcat.version | cut -d "=" -f 2)
-# autodetects latest version
-TOMCAT_TARGET=$(curl -sSL ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
-TOMCAT_TARGET=${TOMCAT_TARGET:-7.0.75} # fallback to 7.0.75 if autodetection failed
 
+echo "NUXEO_HOME is ${NUXEO_HOME}"
+echo "TEMPORARY WORK FOLDER is ${WORK_FOLDER}"
 echo "TOMCAT source version (from libs) is ${TOMCAT_SOURCE}"
 echo "TOMCAT source version (from nuxeo.defaults) is ${TOMCAT_NUXEO_DEFAULT}"
 if [ "${TOMCAT_SOURCE}" = "${TOMCAT_NUXEO_DEFAULT}" ]; then
@@ -33,15 +67,15 @@ echo "Retrieving files..."
 rm -rf ${DOWNLOAD_FOLDER}
 mkdir -p ${DOWNLOAD_FOLDER}
 cd ${DOWNLOAD_FOLDER}
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5 || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1 || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5 || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1 || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5 || exit 2
-wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1 || exit 2
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5 || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1 || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5 || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1 || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5 || exit 1
+wget ${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1 || exit 1
 
 echo "Checking archives..."
 # fix wrong md5 and sha1 file content
