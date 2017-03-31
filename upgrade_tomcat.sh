@@ -2,6 +2,12 @@
 
 # Upgrades Nuxeo Tomcat to 7.0.76
 
+# TODOs
+# make the NUXEO_HOME a parameter
+# make TOMCAT_TARGET a parameter
+# ideally, get the latest Tomcat 7 revision from the site and thus TARGET VERSION for Tomcat would become optional
+# ideally bis, detect the current Tomcat version from the NUXEO_HOME deployed (jar command and nuxeo.default to compare)
+
 TOMCAT_SOURCE="7.0.64"
 TOMCAT_TARGET="7.0.76"
 WORK_FOLDER=/tmp
@@ -12,9 +18,9 @@ echo "Retrieving files..."
 rm -rf ${DOWNLOAD_FOLDER}
 mkdir -p ${DOWNLOAD_FOLDER}
 cd ${DOWNLOAD_FOLDER}
-wget http://www-eu.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz
-wget https://www.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5
-wget https://www.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1
+wget https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz
+wget https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5
+wget https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1
 wget https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar
 wget https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5
 wget https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1
@@ -53,4 +59,4 @@ cp apache-tomcat-${TOMCAT_TARGET}/RELEASE-NOTES ${NUXEO_HOME}/doc-tomcat
 cp apache-tomcat-${TOMCAT_TARGET}/LICENSE ${NUXEO_HOME}/doc-tomcat
 cp apache-tomcat-${TOMCAT_TARGET}/NOTICE ${NUXEO_HOME}/doc-tomcat
 cp apache-tomcat-${TOMCAT_TARGET}/RUNNING.txt ${NUXEO_HOME}/doc-tomcat
-sed -i 's/7\.0\.64/'${TOMCAT_TARGET}'/g' ${NUXEO_HOME}/templates/nuxeo.defaults
+sed -i 's/'$(echo "$TOMCAT_SOURCE" | sed 's/\./\\./g')'/'${TOMCAT_TARGET}'/g' ${NUXEO_HOME}/templates/nuxeo.defaults
