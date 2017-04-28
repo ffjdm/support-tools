@@ -1,0 +1,32 @@
+--- src/installer/resources/build.xml.orig	2017-04-25 18:35:13.897787628 +0200
++++ src/installer/resources/build.xml	2017-04-25 18:44:53.875402012 +0200
+@@ -25,8 +25,7 @@
+     	<echo message="Be sure you have read the installation/upgrade instructions on the Shibboleth website before proceeding."/>
+     	<echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+         
+-        <input message="Where should the Shibboleth Identity Provider software be installed?" addproperty="idp.home.input" defaultvalue="${idp.home}"/>
+-        <var name="idp.home" value="${idp.home.input}"/>
++        <var name="idp.home" value="SHIBBOLETH_IDP_HOME"/>
+ 
+         <pathToAbsolutePath path="${idp.home}" addproperty="idp.home.path"/>
+         <pathToUrl path="${idp.home}" addproperty="idp.home.url"/>
+@@ -44,10 +43,9 @@
+         <if>
+             <equals arg1="${install.config}" arg2="yes"/>
+             <then>
+-                <input message="What is the fully qualified hostname of the Shibboleth Identity Provider server?" addproperty="idp.hostname.input" defaultvalue="${idp.hostname}"/>
+-                <var name="idp.hostname" value="${idp.hostname.input}"/>
++                <var name="idp.hostname" value="SHIBBOLETH_IDP_HOSTNAME"/>
+ 
+-                <input message="A keystore is about to be generated for you. Please enter a password that will be used to protect it." addproperty="idp.keystore.pass"/>
++		<var name="idp.keystore.pass" value="SHIBBOLETH_IDP_KEYSTORE_PASSWORD"/>
+ 
+                 <propertyfile file="${resources.dir}/install.properties">
+                     <entry key="idp.home" value="${idp.home.input}"/>
+@@ -235,4 +233,4 @@
+             </then>
+         </if>
+     </target>
+-</project>
+\ No newline at end of file
++</project>
