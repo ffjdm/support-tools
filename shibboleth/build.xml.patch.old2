@@ -1,5 +1,5 @@
---- src/installer/resources/build.xml.orig	2017-04-29 19:56:27.677901728 +0200
-+++ src/installer/resources/build.xml	2017-04-29 19:59:33.939272227 +0200
+--- ./src/installer/resources/build.xml.orig	2017-04-29 19:50:16.327049091 +0200
++++ ./src/installer/resources/build.xml	2017-04-29 19:56:30.101919772 +0200
 @@ -25,8 +25,7 @@
      	<echo message="Be sure you have read the installation/upgrade instructions on the Shibboleth website before proceeding."/>
      	<echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
@@ -28,7 +28,7 @@
                  <mkdir dir="${idp.home.path}/war"/>
  
 -                <var name="idp.entity.id" value="https://${idp.hostname}/idp/shibboleth"/>
-+                <var name="idp.entity.id" value="SHIBBOLETH_IDP_PROTOCOL://${idp.hostname}:SHIBBOLETH_IDP_PORT/idp/shibboleth"/>
++                <var name="idp.entity.id" value="SHIBBOLETH_IDP_PROTOCOL://${idp.hostname}/idp/shibboleth"/>
                  <var name="idp.web.xml.name" value="${webapp.dir}/WEB-INF/web.xml"/>
  
                  <regexSplit input="${idp.hostname}" regex="^.*\.(.*\..*$)" addproperty="idp.scope"/>
@@ -37,7 +37,7 @@
                      in a new release.
                  -->
 -                <var name="idp.entity.id" value="https://${idp.hostname}/idp/shibboleth"/>
-+                <var name="idp.entity.id" value="SHIBBOLETH_IDP_PROTOCOL://${idp.hostname}:SHIBBOLETH_IDP_PORT/idp/shibboleth"/>
++                <var name="idp.entity.id" value="SHIBBOLETH_IDP_PROTOCOL://${idp.hostname}/idp/shibboleth"/>
                  <regexSplit input="${idp.hostname}" regex="^.*\.(.*\..*$)" addproperty="idp.scope"/>
                  <stringFromFile input="${idp.home.path}/credentials/idp.crt" addProperty="idp.cert"/>
                      
@@ -46,7 +46,7 @@
                  <input message="What is the fully qualified hostname of the Shibboleth Identity Provider server?" addproperty="idp.hostname.input" defaultvalue="${idp.hostname}"/> 
                  <var name="idp.hostname" value="${idp.hostname.input}"/> 
 -                <var name="idp.entity.id" value="https://${idp.hostname}/idp/shibboleth"/> 
-+                <var name="idp.entity.id" value="SHIBBOLETH_IDP_PROTOCOL://${idp.hostname}:SHIBBOLETH_IDP_PORT/idp/shibboleth"/> 
++                <var name="idp.entity.id" value="SHIBBOLETH_IDP_PROTOCOL://${idp.hostname}/idp/shibboleth"/> 
  
                  <input message="A keystore is about to be generated for you. Please enter a password that will be used to protect it." addproperty="idp.keystore.pass"/> 
  

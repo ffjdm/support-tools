@@ -16,6 +16,12 @@
 # TODO make apache ports for SP a parameter
 
 # NOTE idpparams.patch has to be in the same location than the script
+# NOTE NUXEO_CLID has to be setup !!
+
+# NOTE il a fallu
+# changer l'entityID de example.org à sp.shibboleth.com dans le relying-party.xml ?
+# mettre tout à never dans relying-party.xml
+# enlever validate="true" de shibboleth.xml pour le MetadataProvider
 
 ORIGIN_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -247,7 +253,7 @@ sudo bash -c "echo '<VirtualHost *:80>
       Allow from all
     </Proxy>
     ProxyPass /idp/ ajp://localhost:8009/idp/
-</VirtualHost>' > /etc/apache2/sites-enabled/${IDP_HOST}.conf"
+</VirtualHost>' > /etc/apache2/sites-available/${IDP_HOST}.conf"
 
 sudo bash -c "echo '<VirtualHost *:80>
     ServerName ${SP_HOST}
@@ -266,7 +272,7 @@ sudo bash -c "echo '<VirtualHost *:80>
 		    require valid-user
 		    ShibUseHeaders On
     </Location>
-</VirtualHost>' > /etc/apache2/sites-enabled/${SP_HOST}.conf"
+</VirtualHost>' > /etc/apache2/sites-available/${SP_HOST}.conf"
 sudo a2enmod proxy_ajp
 sudo a2ensite ${IDP_HOST}
 sudo a2ensite ${SP_HOST}
@@ -279,7 +285,7 @@ sudo wget --no-check-certificate $(if [ "${SP_SSL_ENABLED}" = "yes" ]; then echo
 
 # need to restart the Idp and SP
 
-sudo docker run -d --name ${NUXEO_CONTAINER} -e "NUXEO_CLID=${NUXEO_CLID}" -e "NUXEO_INSTALL_HOTFIX=true" -e "NUXEO_PACKAGES=shibboleth-authentication" -p ${SP_TOMCAT_HTTP_PORT}:8080 nuxeo:${NUXEO_VERSION}
+# sudo docker run -d --name ${NUXEO_CONTAINER} -e "NUXEO_CLID=${NUXEO_CLID}" -e "NUXEO_INSTALL_HOTFIX=true" -e "NUXEO_PACKAGES=shibboleth-authentication" -p ${SP_TOMCAT_HTTP_PORT}:8080 nuxeo:${NUXEO_VERSION}
 
 # here we need to check nuxeo is started then stop it and inject the contribution into the container filesystem
 # then restart the container
@@ -297,3 +303,30 @@ sudo docker run -d --name ${NUXEO_CONTAINER} -e "NUXEO_CLID=${NUXEO_CLID}" -e "N
 # wait for complete startup
 # sudo docker start ${NUXEO_CONTAINER}
 # wait for complete startup
+
+
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends \
+    perl \
+    locales \
+    pwgen \
+    imagemagick \
+    ffmpeg2theora \
+    ufraw \
+    poppler-utils \
+    libreoffice \
+    libwpd-tools \
+    exiftool \
+    ghostscript
+
+sudo apt-get install unzip -y
+
+cd /tmp
+wget http://community.nuxeo.com/static/releases/nuxeo-7.10/nuxeo-cap-7.10-tomcat.zip
+cd /opt
+sudo unzip /tmp/nuxeo-cap-7.10-tomcat.zip
+
+cd nuxeo-cap-7.10-tomcat/nxserver/data
+sudo bash -c "echo \"${NUXEO_CLID/--/\\n}\" > instance.clid"
+sudo ./nuxeoctl mp-hotfix --relax=false --accept=true
+sudo ./nuxeoctl mp-install shibboleth-authentication --relax=false --accept=true

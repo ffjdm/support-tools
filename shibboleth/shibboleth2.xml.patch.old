@@ -7,7 +7,7 @@
 -    <ApplicationDefaults entityID="https://sp.example.org/shibboleth"
 -                         REMOTE_USER="eppn persistent-id targeted-id"
 -                         cipherSuites="ECDHE+AESGCM:ECDHE:!aNULL:!eNULL:!LOW:!EXPORT:!RC4:!SHA:!SSLv2">
-+    <ApplicationDefaults entityID="SHIBBOLETH_SP_PROTOCOL://SHIBBOLETH_SP_HOSTNAME:SHIBBOLETH_IDP_PORT/shibboleth" REMOTE_USER="eppn persistent-id targeted-id">
++    <ApplicationDefaults entityID="SHIBBOLETH_SP_PROTOCOL://SHIBBOLETH_SP_HOSTNAME/shibboleth" REMOTE_USER="eppn persistent-id targeted-id">
 
          <!--
          Controls session lifetimes, address checks, cookie handling, and the protocol handlers.
@@ -17,7 +17,7 @@
              -->
 -            <SSO entityID="https://idp.example.org/idp/shibboleth"
 -                 discoveryProtocol="SAMLDS" discoveryURL="https://ds.example.org/DS/WAYF">
-+            <SSO entityID="SHIBBOLETH_IDP_PROTOCOL://SHIBBOLETH_IDP_HOSTNAME:SHIBBOLETH_IDP_PORT/idp/shibboleth">
++            <SSO entityID="SHIBBOLETH_IDP_PROTOCOL://SHIBBOLETH_IDP_HOSTNAME/idp/shibboleth">
                SAML2 SAML1
              </SSO>
 
